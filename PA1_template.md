@@ -10,6 +10,8 @@ opts_chunk$set(fig.path = "./figures/", echo = TRUE)
 
 activity <- read.csv("activity.csv")
 library("ggplot2")
+library("lattice")
+library("plyr")
 
 # stepCounts <- aggregate(activity$steps, list(activity$date), sum)
 # colnames(stepCounts) <- c('date', 'steps')
@@ -161,3 +163,25 @@ The effect of this method of imputation is to bring the median closer to the mea
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
+
+
+```r
+# add factor for weekday into activityTotal
+activityTotal$weekday <- factor(ifelse(weekdays(as.Date(as.character(activityTotal$date))) %in% 
+    c("Saturday", "Sunday"), "weekend", "weekday"))
+
+activityIntervalbyWeekday <- ddply(activityTotal, .(interval, weekday), summarize, 
+    mean = round(mean(steps), 4))
+colnames(activityIntervalbyWeekday) <- c("interval", "weekday", "steps")
+
+xyplot(steps ~ interval | weekday, data = activityIntervalbyWeekday, type = "l", 
+    xlab = "Interval", ylab = "Number of Steps", layout = c(1, 2))
+```
+
+![plot of chunk unnamed-chunk-5](./figures/unnamed-chunk-5.png) 
+
+```r
+
+```
+
