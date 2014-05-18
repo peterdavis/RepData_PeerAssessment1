@@ -34,8 +34,10 @@ median(stepCounts$steps, na.rm = TRUE)
 ## What is the average daily activity pattern?
 
 ```{r}
+#calculate the mean steps across days per interval - note that default for aggregate is to ignore NA
 intervalMean <- aggregate(steps ~ interval, data = activity, mean)
 
+#show a quick plot of the mean steps by intervals
 qplot(interval, steps, data=intervalMean, geom="line")
 
 # what is the interval, on average across all days, that contains the max number of steps
@@ -49,11 +51,36 @@ intervalMean[intervalMean$steps==max(intervalMean$steps),]
 
 
 ```{r}
-# calculuate missing values
+# calculuate the number of missing values
+sum(is.na(activity$steps))
 
+# use the mean value per interval as an imputation to fill in missing values 
+# get vector of missings
 
+activityClean <- activity[!is.na(activity$steps),]
+activityNA <- activity[is.na(activity$steps),]
 
+activityImputed <- merge(activityNA, intervalMean, by="interval")
+
+#clean imputed data
+colsKeep = c("steps.y", "date", "interval")
+
+activityImputed <- activityImputed[colsKeep]
+colnames(activityImputed)<- c("steps", "date", "interval")
+
+# merge mean values into missing
+activityTotal <- rbind(activityClean, activityImputed)
+
+#plot total number of steps each day
+stepImputedCounts <- aggregate(steps ~ date, data = activityTotal, sum)
+
+qplot(date, steps, data=stepImputedCounts, geom="histogram")
+
+mean(stepImputedCounts$steps)
+median(stepImputedCounts$steps)
 ```
+
+The effect of this method of imputation is to bring the median closer to the mean.  The mean is identical and the median has changed slightly to now match the mean.  This makes sense since we ignored NA's in the first run and replaced them with the means in the second run.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
