@@ -3,8 +3,9 @@
 
 ## Loading and preprocessing the data
 
-```{r echo=TRUE}
-setwd("E:/Data/Coursera/Reproducible Research/week2/RepData_PeerAssessment1")
+```{r}
+
+opts_chunk$set(fig.path="./figures/", echo=TRUE)
 
 activity <- read.csv("activity.csv")
 library('ggplot2')
@@ -16,13 +17,12 @@ library('ggplot2')
 
 stepCounts <- aggregate(steps ~ date, data = activity, sum)
 
-qplot(date, steps, data=stepCounts, geom="histogram")
 
 ```
 
 ## What is mean total number of steps taken per day?
 
-```{r echo=TRUE}
+```{r}
 qplot(date, steps, data=stepCounts, geom="histogram")
 
 mean(stepCounts$steps, na.rm = TRUE)
@@ -33,7 +33,7 @@ median(stepCounts$steps, na.rm = TRUE)
 
 ## What is the average daily activity pattern?
 
-```{r echo=TRUE}
+```{r}
 intervalMean <- aggregate(steps ~ interval, data = activity, mean)
 
 qplot(interval, steps, data=intervalMean, geom="line")
@@ -48,7 +48,7 @@ intervalMean[intervalMean$steps==max(intervalMean$steps),]
 ## Imputing missing values
 
 
-```{r echo=TRUE}
+```{r}
 # calculuate missing values
 
 
